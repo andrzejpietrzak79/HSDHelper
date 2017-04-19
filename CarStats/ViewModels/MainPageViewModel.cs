@@ -96,8 +96,6 @@ namespace HSDHelper.ViewModels {
 			Messenger.Default.Send(new DataRefreshedMessage(CarState));
 		}
 		
-
-
 		/// <summary>
 		/// Updates car state values related to GPS
 		/// </summary>

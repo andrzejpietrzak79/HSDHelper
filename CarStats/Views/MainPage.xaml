@@ -1,0 +1,563 @@
+<Page x:Class="HSDHelper.Views.MainPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:controls="using:Template10.Controls"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:vm="using:HSDHelper.ViewModels"
+      xmlns:controls1="using:WinRTXamlToolkit.Controls"
+      xmlns:displays="using:HSDHelper.Displays"
+      mc:Ignorable="d">
+
+    <Page.DataContext>
+        <vm:MainPageViewModel x:Name="ViewModel" />
+    </Page.DataContext>
+    <Page.Resources>
+        <Style TargetType="controls1:Gauge">
+            <Setter Property="NeedleBrush" Value="#FF58f458" />
+            <Setter Property="ScaleBrush" Value="#806495ed" />
+            <Setter Property="ScaleTickBrush" Value="#40FFFFFF" />
+            <Setter Property="ScaleWidth" Value="6" />
+            <Setter Property="TickBrush" Value="Black" />
+            <Setter Property="TrailBrush" Value="#006495ed" />
+            <Setter Property="ValueBrush" Value="White" />
+            <Setter Property="UnitBrush" Value="Gray" />
+        </Style>
+
+    </Page.Resources>
+    <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="AdaptiveVisualStateGroup">
+                <VisualState x:Name="VisualStateNarrow">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource NarrowMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--  TODO: change properties for narrow view  -->
+                        <!--<Setter Target="stateTextBox.Text" Value="Narrow Visual State" />-->
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="VisualStateNormal">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource NormalMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--  TODO: change properties for normal view  -->
+                        <!--<Setter Target="stateTextBox.Text" Value="Normal Visual State" />-->
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="VisualStateWide">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource WideMinWidth}" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--  TODO: change properties for wide view  -->
+                        <!--<Setter Target="stateTextBox.Text" Value="Wide Visual State" />-->
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <CommandBar x:Name="pageHeader" Background="DimGray"
+                             Foreground="White"
+                             RelativePanel.AlignLeftWithPanel="True"
+                             RelativePanel.AlignRightWithPanel="True"
+                             RelativePanel.AlignBottomWithPanel="True"
+                    >
+            <AppBarButton Click="{x:Bind ViewModel.SaveLog}" Label="Save Log" Icon="Save" Foreground="White"/>
+            <AppBarButton Click="{x:Bind ViewModel.Reset}" Label="Reset" Icon="Clear" Foreground="White"/>
+            <AppBarButton Click="{x:Bind ViewModel.Reconnect}" Label="Reconnect" Icon="Refresh" Foreground="White"/>
+        </CommandBar>
+        <TextBlock
+            RelativePanel.AlignLeftWithPanel="True"
+            RelativePanel.AlignRightWithPanel="True"
+            RelativePanel.AlignBottomWithPanel="True"
+            IsHitTestVisible="False"
+            Foreground="White"
+            FontSize="24"
+            Margin="8 4"
+            Text="{Binding OBDService.ConnectionState, Converter={StaticResource ConnectionStateToStringConverter}}"
+            />
+        <Grid Name="MainGrid"
+              RelativePanel.AlignLeftWithPanel="True"
+              RelativePanel.AlignRightWithPanel="True"
+              RelativePanel.AlignTopWithPanel="True"
+              RelativePanel.Above="pageHeader"
+              Background="#000000">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="0.5*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="1.5*"/>
+            </Grid.RowDefinitions>
+            <TextBlock 
+                FontSize="60" 
+                FontWeight="Bold"
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Grid.Column="0" 
+                Grid.Row="0" 
+                Grid.ColumnSpan="1" 
+                Grid.RowSpan="2" 
+                Text="{Binding CarState.Speed}" 
+                Foreground="{Binding CarState.SpeedColor}"/>
+            <Grid Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="1"  Grid.RowSpan="3" Margin="5" Background="#4000aaff" Name="PowerGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Rectangle Fill="Black" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Rectangle Fill="Black" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <displays:Bar BackgroundBrush="Gray" Grid.Column="1" SecondValue="{Binding CarState.ICEPower}" FirstValue="0" FirstValueMin="0" FirstValueMax="50" SecondValueMin="0" SecondValueMax="50" SecondValueBrush="{Binding CarState.ICEPowerColor}"></displays:Bar>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Foreground="White" Text="{Binding CarState.ICEPower, Converter={StaticResource DoubleToStringConverter}}"></TextBlock>
+                <TextBlock Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" FontSize="20" Foreground="Black" Text="{Binding CarState.GKWH, Converter={StaticResource DoubleToStringConverter}}"></TextBlock>
+
+            </Grid>
+            <Grid Grid.Column="2" Grid.Row="0" Grid.ColumnSpan="1"  Grid.RowSpan="3" Margin="5" Background="#4000aaff">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Rectangle Fill="Black" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <Rectangle Fill="Black" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                <displays:Bar Grid.Column="1"
+                              BackgroundBrush="Gray"  
+                              FirstValue="{Binding CarState.BatteryCharge}" 
+                              FirstValueMin="0" 
+                              FirstValueMax="40" 
+                              FirstValueBrush="Green" 
+                              SecondValue="{Binding CarState.BatteryDischarge}" 
+                              SecondValueMin="0" 
+                              SecondValueMax="40"
+                              SecondValueBrush="Aqua" 
+                              ></displays:Bar>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Foreground="White" Text="{Binding CarState.BatteryPower, Converter={StaticResource DoubleToStringConverter}}"></TextBlock>
+            </Grid>
+            <Grid Grid.Row="2" Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Bottom" FontSize="20" Margin="10 0 0 0">Avg</TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Bottom" FontSize="30" Text="{Binding CarState.L100Avg, Converter={StaticResource DoubleToStringConverter}}"></TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Bottom" FontSize="30" Text="{Binding CarState.TripFuelAvg, Converter={StaticResource DoubleToStringConverter}}"></TextBlock>
+                <TextBlock Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Center" Foreground="White" VerticalAlignment="Bottom" FontSize="20" Margin="10 0 0 0">l/100km</TextBlock>
+            </Grid>
+            <Grid Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="1"  Grid.RowSpan="2">
+                <Viewbox Margin="10">
+                    <Grid>
+                        <Path Data="M16.004,427.871h46.617h86.253c8.483,0,15.49-6.622,15.965-15.092c3.629-64.697,30.556-125.011,76.742-171.198
+			c46.188-46.186,106.501-73.112,171.198-76.741c8.47-0.475,15.092-7.482,15.092-15.965V62.622V16.004
+			C427.871,7.173,420.727,0,411.974,0c-0.202,0-0.405,0.004-0.609,0.012C188.018,8.478,8.478,188.018,0.012,411.364
+			C-0.33,420.393,6.969,427.871,16.004,427.871zM486.769,276.767c-115.795,0-210.002,94.207-210.002,210.002c0,115.795,94.207,210.002,210.002,210.002
+			c115.796,0,210.003-94.207,210.003-210.002C696.771,370.974,602.564,276.767,486.769,276.767z M486.769,322.146
+			c12.981,0,23.507,10.524,23.507,23.507c0,12.982-10.524,23.507-23.507,23.507c-12.983,0-23.507-10.524-23.507-23.507
+			C463.262,332.671,473.786,322.146,486.769,322.146z M344.258,511.67c-12.981,0-23.507-10.523-23.507-23.508
+			c0-12.98,10.524-23.506,23.507-23.506s23.507,10.523,23.507,23.506C367.765,501.146,357.241,511.67,344.258,511.67z
+			 M486.769,654.182c-12.982,0-23.507-10.525-23.507-23.508s10.523-23.508,23.507-23.508c12.982,0,23.507,10.525,23.507,23.508
+			S499.751,654.182,486.769,654.182z M486.769,561.803c-41.44,0-75.034-33.594-75.034-75.033c0-41.441,33.594-75.035,75.034-75.035
+			c41.439,0,75.034,33.594,75.034,75.035C561.803,528.209,528.209,561.803,486.769,561.803z M652.785,488.162
+			c0,12.982-10.523,23.508-23.507,23.508c-12.982,0-23.506-10.523-23.506-23.508c0-12.98,10.523-23.506,23.506-23.506
+			C642.262,464.656,652.785,475.182,652.785,488.162zM486.769,58.598c-11.41,0-22.714,0.451-33.898,1.327v88.949c0,21.732-16.996,39.709-38.69,40.926
+			c-29.176,1.637-57.345,8.456-83.725,20.268c-26.442,11.841-50.396,28.391-71.197,49.19c-20.8,20.8-37.35,44.754-49.191,71.197
+			c-11.812,26.379-18.632,54.547-20.268,83.723c-1.217,21.695-19.194,38.691-40.926,38.691H59.926
+			c-0.876,11.185-1.328,22.49-1.328,33.9c0,236.473,191.699,428.17,428.171,428.17S914.939,723.24,914.939,486.77
+			C914.939,250.297,723.241,58.598,486.769,58.598z M670.618,670.619c-49.108,49.107-114.399,76.152-183.85,76.152
+			c-69.45,0-134.741-27.045-183.85-76.152c-49.109-49.107-76.153-114.4-76.153-183.85c0-69.451,27.045-134.742,76.153-183.851
+			c49.108-49.108,114.4-76.153,183.85-76.153c69.45,0,134.741,27.045,183.85,76.153s76.153,114.4,76.153,183.851
+			C746.771,556.219,719.727,621.512,670.618,670.619z"
+                              Fill="{Binding CarState.BrakeColor}"></Path>
+                    </Grid>
+                </Viewbox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="0" Stroke="White" Fill="{Binding CarState.BrakeH1Color}" Name="x1" Height="{Binding ElementName=x1, Path=ActualWidth}"></Rectangle>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="1" Stroke="White" Fill="{Binding CarState.BrakeH2Color}" Name="x2" Height="{Binding ElementName=x2, Path=ActualWidth}"></Rectangle>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="2" Stroke="White" Fill="{Binding CarState.BrakeH3Color}" Name="x3" Height="{Binding ElementName=x3, Path=ActualWidth}"></Rectangle>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="3" Stroke="White" Fill="{Binding CarState.BrakeH4Color}" Name="x4" Height="{Binding ElementName=x4, Path=ActualWidth}"></Rectangle>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="4" Stroke="White" Fill="{Binding CarState.BrakeH5Color}" Name="x5" Height="{Binding ElementName=x5, Path=ActualWidth}"></Rectangle>
+                </Grid>
+            </Grid>
+            <Grid Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="1"  Grid.RowSpan="2" Margin="5">
+                <Viewbox VerticalAlignment="Top">
+                    <Grid>
+                        <Path Fill="{Binding CarState.ICEPowerColor}" Stroke="{Binding CarState.ICEPowerColor}" StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Data="M32.6 8.9v2.2h-3.8V8.6h-5.1l-2.5-3.8H7.3v3.8H4.8v12.6h6.3l3.8 6.3h13.9V23h3.8v2.2h2.5c1.4 0 2.5-1.1 2.5-2.5V11.4c0-1.4-1.1-2.5-2.5-2.5h-2.5zM7.3 1h13.9M14.3 4.8V1M4.8 15.2H1M1 21.5V8.8"></Path>
+                        <TextBlock FontWeight="Bold" Margin="0" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black" Text="{Binding CarState.RPM}">1234</TextBlock>
+                    </Grid>
+                </Viewbox>
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="1" VerticalAlignment="Center">
+
+                <TextBlock Foreground="White" FontSize="26" Text="MG1 " HorizontalAlignment="Left" VerticalAlignment="Bottom"></TextBlock>
+                <TextBlock Foreground="White" FontSize="30" FontWeight="Bold" Text="{Binding CarState.MG1RPM}" HorizontalAlignment="Right" VerticalAlignment="Bottom">-1522</TextBlock>
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="2" VerticalAlignment="Center">
+                <Viewbox Margin="8 0" HorizontalAlignment="Left">
+                    <Path Fill="White" Data="M629.4,877.9c47.2,10.8,47.2,10.8,47.2,62.3c0,4.2,0,8.3,0,12.5c-0.1,35-2.2,37.2-36.6,37.2c-180.1,0-360.3,0-540.4,0c-37.5,0-38.9-1.5-38.9-40c0-5-0.1-10,0.1-15c1.9-48.8-11.2-49.6,48.3-56.3c0-10.2,0-20.8,0-31.3c0-237.7,0-475.4,0-713c0-8.3-0.1-16.7,0.1-25c1.5-61.4,37.5-98.4,98.6-98.8c107.6-0.6,215.2-0.7,322.7,0c60.1,0.4,96.1,36.9,96.5,97.3c0.6,90.9,0.2,181.8,0.1,272.7c0,9,0,18.1,0,26.4c101.2,33.4,116.5,54.9,116.4,161.8c0,68.4-0.3,136.8-0.1,205.2c0.1,33.3,4.3,37.5,37.4,37.7c81.2,0.6,70.7,7.7,70.9-70.1c0.4-151.8,0.7-303.6-0.3-455.3c-0.1-14.5-8.1-29.7-15-43.3c-7.8-15.5-22.1-28.3-27.4-44.3c-17.4-52.5-58-84.1-99.2-115.3c-12.1-9.2-20.9-16.4-9.3-31.9c11.6-15.5,21.8-9.6,33.5-0.3c48.2,38.5,96.7,76.7,145.1,114.9c41.4,32.7,60.5,74.8,60.1,128.3c-1.2,162.6-0.4,325.2-0.5,487.9c-0.1,92-26,117.4-118.2,116.1c-26.7-0.4-53.4-0.4-80-2.6c-47.2-4-78.6-32.9-80-80.2c-2.8-90-2-180-2.6-270.1c-0.2-20.6-1.2-40.6-28.6-48.4C629.4,624.6,629.4,751.4,629.4,877.9z M370.2,329.7c44.1,0,88.2-0.5,132.4,0.2c19.7,0.3,29.5-7.2,29.4-27.6c-0.3-49.9-0.3-99.9,0-149.8c0.1-18.9-8.6-27.3-27.3-27.2c-89.9,0.2-179.8,0.3-269.7-0.1c-20.9-0.1-30.3,8.9-30.1,30.1c0.6,48.3,0.5,96.6,0,144.8c-0.2,21.3,9.5,30,30.4,29.7C280.3,329.4,325.3,329.7,370.2,329.7z"></Path>
+                </Viewbox>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Foreground="White" FontSize="30" FontWeight="Bold" Text="{Binding CarState.TankLevel, Converter={StaticResource DoubleToStringConverter}}" HorizontalAlignment="Left" VerticalAlignment="Bottom"></TextBlock>
+                    <TextBlock Foreground="White" FontSize="30" Text=" l" HorizontalAlignment="Right" VerticalAlignment="Bottom"></TextBlock>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="2" Grid.Row="3" Grid.ColumnSpan="1"  Grid.RowSpan="2" Margin="5">
+                <Viewbox>
+                    <Path Data="M100,92c0,4.418-3.582,8-8,8H8c-4.418,0-8-3.582-8-8V28c0-4.418,3.582-8,8-8h84c4.418,0,8,3.582,8,8V92zM12.5,15V5c0-2.761,2.239-5,5-5h10c2.761,0,5,2.239,5,5v10zM67.5,15V5c0-2.761,2.239-5,5-5h10c2.761,0,5,2.239,5,5v10z" 
+                          Fill="{Binding CarState.StateOfChargeColor}"></Path>
+                </Viewbox>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0" Orientation="Horizontal">
+                    <TextBlock FontSize="40" Foreground="Black" Text="{Binding CarState.StateOfCharge}"></TextBlock>
+                    <TextBlock FontSize="40" Foreground="Black" Text="%"></TextBlock>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0 0 0 0" Orientation="Horizontal">
+                    <TextBlock FontSize="25" Foreground="Black" Text="{Binding CarState.BatteryVoltage, Converter={StaticResource DoubleToStringConverter}}"></TextBlock>
+                    <TextBlock FontSize="25" Foreground="Black" Text="V"></TextBlock>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="1"  Grid.RowSpan="2">
+                <Viewbox Margin="10">
+                    <Path HorizontalAlignment="Center" VerticalAlignment="Center" Data="M53.219,0.418c2.622,0.022,6.162,0.312,9.628,1.173
+		c4.223,1.049,7.783,3.226,10.779,6.385c2.675,2.821,5.761,5.135,9.236,6.877c2.873,1.44,5.818,2.738,8.719,4.125
+		c2.479,1.185,4.565,2.883,6.207,5.079c1.606,2.147,2.094,4.604,1.709,7.239c-0.389,2.667-1.501,4.992-3.369,6.942
+		c-1.157,1.207-2.545,2.114-3.964,2.972c-1.54,0.931-3.174,1.663-4.873,2.254c-0.358,0.125-0.702,0.295-1.046,0.46
+		c-1.396,0.667-2.059,1.852-2.273,3.317c-0.148,1.015-0.499,1.956-1.007,2.825c-1.927,3.297-4.793,5.27-8.554,5.914
+		c-2.012,0.345-3.991,0.158-5.918-0.525c-2.556-0.907-4.158-2.723-4.991-5.261c-0.27-0.821-0.712-1.165-1.581-1.165
+		c-3.535,0-7.07-0.002-10.605,0c-5.494,0.003-10.987,0.013-16.48,0.012c-0.836,0-1.354,0.372-1.727,1.132
+		c-1.417,2.891-3.691,4.763-6.838,5.518c-2.313,0.555-4.626,0.491-6.891-0.224c-2.65-0.836-4.529-2.607-5.732-5.08
+		c-0.35-0.719-0.599-1.51-0.757-2.295c-0.32-1.593-1.264-2.641-2.665-3.339c-2.3-1.147-4.367-2.617-6.176-4.443
+		c-1.389-1.402-2.618-2.917-3.219-4.84c-1.148-3.676-0.526-7.036,1.826-10.082c1.763-2.283,4.056-3.84,6.721-4.871
+		c2.038-0.788,4.103-1.507,6.137-2.304c5.199-2.038,9.799-5.018,13.765-8.947c1.893-1.875,3.867-3.627,6.174-4.98
+		c3.135-1.837,6.499-3,10.103-3.466C47.788,0.532,50.029,0.418,53.219,0.418z M79.755,17.264c-0.22,0-0.346,0-0.472,0
+		c-2.167,0-4.337,0.057-6.501-0.026c-0.954-0.036-1.462,0.281-1.975,1.075c-3.597,5.562-7.254,11.084-10.889,16.621
+		c-0.298,0.453-0.704,0.723-1.231,0.824c-0.374,0.072-0.681-0.033-0.84-0.38c-0.156-0.341-0.299-0.711-0.336-1.08
+		c-0.168-1.67-0.295-3.344-0.438-5.017c-0.177-2.042-0.356-4.083-0.533-6.125c-0.148-1.719-0.293-3.438-0.443-5.156
+		c-0.024-0.275,0.028-0.664-0.126-0.79c-0.174-0.143-0.543-0.055-0.826-0.055c-4.543,0.004-9.087,0.009-13.63,0.016
+		c-3.825,0.006-7.649,0.015-11.474,0.023c-0.115,0-0.232,0-0.346,0.018c-1.037,0.162-1.651,0.798-2.089,1.725
+		c-3.533,7.477-7.084,14.944-10.634,22.413c-0.227,0.478-0.313,0.971-0.202,1.482c0.213,0.984,0.822,1.81,2.08,1.814
+		c0.301,0,0.602-0.02,0.903-0.02c7.256-0.001,14.511-0.002,21.767,0.005c0.291,0,0.446-0.069,0.576-0.353
+		c0.517-1.124,1.071-2.231,1.61-3.346c0.29-0.6,0.578-1.201,0.889-1.848c-0.174,0-0.288,0-0.401,0
+		c-5.181-0.008-10.361-0.016-15.542-0.024c-1.02-0.001-1.472-0.537-1.104-1.487c0.446-1.149,1-2.261,1.565-3.359
+		c0.168-0.327,0.498-0.602,0.812-0.814c0.48-0.324,1.046-0.264,1.61-0.261c3.639,0.022,7.279,0.01,10.918,0.015
+		c0.216,0,0.324-0.07,0.417-0.271c0.634-1.375,1.284-2.743,1.928-4.114c0.076-0.162,0.146-0.328,0.237-0.535
+		c-0.173,0-0.287,0-0.401,0c-3.732-0.008-7.464-0.016-11.196-0.024c-0.804-0.002-1.197-0.476-0.886-1.218
+		c0.512-1.224,1.099-2.418,1.696-3.603c0.135-0.267,0.41-0.522,0.683-0.645c0.368-0.165,0.796-0.271,1.199-0.272
+		c4.566-0.018,9.133-0.011,13.7-0.011c0.124,0,0.248,0,0.386,0c0.186,1.94,0.371,3.841,0.55,5.743
+		c0.196,2.086,0.385,4.173,0.581,6.26c0.224,2.386,0.463,4.771,0.674,7.157c0.127,1.438,1.079,2.584,2.49,2.872
+		c0.495,0.101,1.01,0.14,1.516,0.14c1.182,0,2.362-0.051,3.544-0.06c1.689-0.014,2.975-0.76,3.909-2.136
+		c0.572-0.843,1.12-1.702,1.675-2.558c4.418-6.822,8.837-13.644,13.253-20.468C78.851,18.729,79.276,18.029,79.755,17.264z" 
+                          Fill="{Binding CarState.EVColor}"></Path>
+                </Viewbox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="0" Stroke="White" Fill="{Binding CarState.EVH1Color}" Name="y1" Height="{Binding ElementName=x1, Path=ActualWidth}"></Rectangle>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="1" Stroke="White" Fill="{Binding CarState.EVH2Color}" Name="y2" Height="{Binding ElementName=x2, Path=ActualWidth}"></Rectangle>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="2" Stroke="White" Fill="{Binding CarState.EVH3Color}" Name="y3" Height="{Binding ElementName=x3, Path=ActualWidth}"></Rectangle>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="3" Stroke="White" Fill="{Binding CarState.EVH4Color}" Name="y4" Height="{Binding ElementName=x4, Path=ActualWidth}"></Rectangle>
+                    <Rectangle Margin="2" Grid.Row="1" Grid.Column="4" Stroke="White" Fill="{Binding CarState.EVH5Color}" Name="y5" Height="{Binding ElementName=x5, Path=ActualWidth}"></Rectangle>
+                </Grid>
+            </Grid>
+            <Grid Grid.Column="1" Grid.Row="6" Grid.ColumnSpan="2"  Grid.RowSpan="1" Margin="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock FontSize="30" Text="{Binding CarState.BatteryAirTemperature}" Foreground="White"></TextBlock>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Foreground="White">&#xB0;</TextBlock>
+                </StackPanel>
+                <Viewbox Grid.Column="1">
+                    <Path Data="M100,92c0,4.418-3.582,8-8,8H8c-4.418,0-8-3.582-8-8V28c0-4.418,3.582-8,8-8h84c4.418,0,8,3.582,8,8V92zM12.5,15V5c0-2.761,2.239-5,5-5h10c2.761,0,5,2.239,5,5v10zM67.5,15V5c0-2.761,2.239-5,5-5h10c2.761,0,5,2.239,5,5v10z" 
+                          Fill="{Binding CarState.BatteryTemperatureColor}"></Path>
+                </Viewbox>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Orientation="Horizontal">
+                    <TextBlock FontSize="30" Text="{Binding CarState.BatteryTemperature}" Foreground="Black"></TextBlock>
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Foreground="Black">&#xB0;</TextBlock>
+                </StackPanel>
+                <Viewbox Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Path Data="M989.6,522c4.4-151.7-58.9-289.7-162.2-385.1L639.1,341.2c-28.1-24.7-62.5-42.3-100.6-49.9V8V5.4c-9.7-0.5-18.9-0.9-28.6-0.9l-0.4,0.4c-151.7,0-288,66.8-380.3,173.2l207.2,179.9c-30.9,33.8-51.3,77.3-55.8,125.5l-266.1-7.8h-2.7c-0.9,9.7-1.3,18.9-1.8,28.6l0.5,0.4C6.1,656.5,69.4,794.6,172.7,890l194.8-211.5c-0.7-0.7-1.4-1.5-2.1-2.1c28.8,21.9,63.1,36.7,100.6,42V992v2.6c9.7,0.4,18.9,0.9,28.6,0.9l0.4-0.4c151.7,0,288-66.8,380.3-173.2l-210-182.4c22.1-27.5,37.5-60.5,44.1-96.5l276.3,8.1h2.6c0.9-9.7,1.3-18.9,1.8-28.6L989.6,522z M355.6,504c0-77.8,62.9-140.7,140.7-140.7c77.8,0,140.7,62.9,140.7,140.7c0,77.8-62.9,140.7-140.7,140.7C418.4,644.6,355.6,581.8,355.6,504zM573.2,503.5c0-42.5-34.4-76.9-76.9-76.9c-42.5,0-76.9,34.4-76.9,76.9c0,42.5,34.4,76.9,76.9,76.9C538.8,580.4,573.2,546,573.2,503.5z" 
+                          Fill="{Binding CarState.FanColor}"></Path>
+                </Viewbox>
+                <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Text="{Binding CarState.FanMode}" Foreground="White"></TextBlock>
+            </Grid>
+
+            <Grid Grid.Column="1" Grid.Row="7" Grid.ColumnSpan="2"  Grid.RowSpan="2" Margin="5" Background="#4000aaff">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <displays:Bar Grid.Row="0" Orientation="Horizontal" SecondValue="{Binding CarState.TripEvSecondsPercentage}" BackgroundBrush="Aqua" SecondValueBrush="Yellow" SecondValueMin="0" SecondValueMax="100"></displays:Bar>
+                <displays:Bar Grid.Row="1" Orientation="Horizontal" SecondValue="{Binding CarState.TripEvLengthPercentage}" BackgroundBrush="Gray" SecondValueMin="0" SecondValueMax="100"></displays:Bar>
+
+                <!--<Rectangle Grid.Row="0" Fill="Aqua"></Rectangle>
+				<Rectangle Grid.Row="0" Width="100" HorizontalAlignment="Right" Fill="Yellow"></Rectangle>
+				<Rectangle Grid.Row="1" Fill="Gray"></Rectangle>
+				<Rectangle Grid.Row="1" Fill="#00FF00" Width="70" HorizontalAlignment="Right"></Rectangle>
+				-->
+                <TextBlock Grid.Row="0" Text="{Binding CarState.TripSeconds, Converter={StaticResource IntToDurationConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="30" Foreground="Black"></TextBlock>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding CarState.TripEvSecondsPercentage}" VerticalAlignment="Bottom" FontSize="30" Foreground="Black" Margin="0,0,0,7.333"></TextBlock>
+                    <TextBlock VerticalAlignment="Center" FontSize="30" Foreground="Black">%</TextBlock>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <TextBlock Text="{Binding CarState.TripLength, Converter={StaticResource DoubleToStringConverter}}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="30" Foreground="Black"></TextBlock>
+                    <TextBlock VerticalAlignment="Center" FontSize="30" Foreground="Black">km</TextBlock>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right" Grid.Row="1" Orientation="Horizontal">
+                    <TextBlock Text="{Binding CarState.TripEvLengthPercentage}" VerticalAlignment="Center" FontSize="30" Foreground="Black"></TextBlock>
+                    <TextBlock VerticalAlignment="Center" FontSize="30" Foreground="Black">%</TextBlock>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="1"  Grid.RowSpan="2" Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                           Text="{Binding CarState.HSDState}" 
+                           FontSize="30" 
+                            Foreground="White"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"></TextBlock>
+                <TextBlock Grid.Row="1" Grid.Column="0"  FontSize="30" Text="{Binding CarState.CoolantTemperature}" VerticalAlignment="Center" Foreground="White"></TextBlock>
+                <Viewbox Grid.Column="1" Grid.Row="1">
+                    <Path Fill="{Binding CarState.CoolantTemperatureColor}" Stroke="{Binding CarState.CoolantTemperatureColor}" StrokeThickness="2" StrokeStartLineCap="Round" StrokeLineJoin="Round" StrokeEndLineCap="Round" Data="M32.6 8.9v2.2h-3.8V8.6h-5.1l-2.5-3.8H7.3v3.8H4.8v12.6h6.3l3.8 6.3h13.9V23h3.8v2.2h2.5c1.4 0 2.5-1.1 2.5-2.5V11.4c0-1.4-1.1-2.5-2.5-2.5h-2.5zM7.3 1h13.9M14.3 4.8V1M4.8 15.2H1M1 21.5V8.8"></Path>
+                </Viewbox>
+                <TextBlock Grid.Row="2" Grid.Column="0"  FontSize="30" Text="{Binding CarState.InverterTemperature}" VerticalAlignment="Center" Foreground="White"></TextBlock>
+                <Viewbox Grid.Row="2" Grid.Column="1">
+                    <Path Fill="{Binding CarState.InverterTemperatureColor}" Data="M207.523,560.316c0,0,194.42-421.925,194.444-421.986l10.79-23.997c-41.824,12.02-135.271,34.902-135.57,35.833
+			C286.96,122.816,329.017,0,330.829,0c-39.976,0-79.952,0-119.927,0l-12.167,57.938l-51.176,209.995l135.191-36.806
+			L207.523,560.316z"></Path>
+                </Viewbox>
+                <Viewbox Grid.Column="2" Grid.Row="0" Grid.RowSpan="3">
+                    <Path Fill="{Binding CarState.CoolantTemperatureColor}" Data="M191.25,411.704V76.615C191.25,34.291,156.92,0,114.75,0c-42.247,0-76.5,34.176-76.5,76.615v335.089
+			C14.765,432.723,0,463.265,0,497.25C0,560.592,51.389,612,114.75,612c63.342,0,114.75-51.408,114.75-114.75
+			C229.5,463.265,214.754,432.723,191.25,411.704z M114.75,573.75c-42.247,0-76.5-34.253-76.5-76.5
+			c0-28.305,15.396-53.033,38.25-66.269V76.596c0-21.19,17.136-38.346,38.25-38.346c21.247,0,38.25,17.155,38.25,38.346v354.386
+			c22.854,13.216,38.25,37.944,38.25,66.269C191.25,539.497,156.997,573.75,114.75,573.75zM133.569,443.05c0.211-1.052,0.307-2.123,0.307-3.232V248.683c0-10.596-8.473-19.183-19.125-19.183
+			c-10.576,0-19.125,8.721-19.125,19.183v191.135c0,1.109,0.096,2.181,0.268,3.232c-22.415,7.784-38.518,29.108-38.518,54.2
+			c0,31.69,25.685,57.375,57.375,57.375c31.689,0,57.375-25.685,57.375-57.375C172.125,472.158,156.022,450.834,133.569,443.05z"></Path>
+                </Viewbox>
+            </Grid>
+            <displays:Graph x:Name="SpeedHistogram"
+                        MinValue="0"
+                        MaxValue="150"
+                            MinValueSecondary="0"
+                            MaxValueSecondary="15"
+                            Grid.Column="0"
+                        Grid.Row="9" 
+                            Grid.ColumnSpan="3" 
+                            Grid.RowSpan="2"
+                        Margin="0"/>
+            <!--<StackPanel Grid.Column="0"
+                        Grid.Row="8" 
+                        Grid.ColumnSpan="3" 
+                        Grid.RowSpan="2" Opacity="0.75">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="White" Margin="5 0" FontSize="16">GKWH</TextBlock>
+                    <TextBlock Foreground="White" Text="{Binding CarState.GKWH, Converter={StaticResource DoubleToStringConverter}}" FontSize="16"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="White" Margin="5 0" FontSize="16">FuelFlowLitersPerHour</TextBlock>
+                    <TextBlock Foreground="White" Text="{Binding CarState.FuelFlowLitersPerHour, Converter={StaticResource DoubleToStringConverter}}" FontSize="16"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="White" Margin="5 0" FontSize="16">FuelFlowLitersPerHourAverage</TextBlock>
+                    <TextBlock Foreground="White" Text="{Binding CarState.FuelFlowLitersPerHourAverage, Converter={StaticResource DoubleToStringConverter}}" FontSize="16"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="White" Margin="5 0" FontSize="16">ICEPower</TextBlock>
+                    <TextBlock Foreground="White" Text="{Binding CarState.ICEPower, Converter={StaticResource DoubleToStringConverter}}" FontSize="16"></TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Foreground="White" Margin="5 0" FontSize="16">Inj_uL</TextBlock>
+                    <TextBlock Foreground="White" Text="{Binding CarState.Inj_uL, Converter={StaticResource DoubleToStringConverter}}" FontSize="16"></TextBlock>
+                </StackPanel>
+            </StackPanel>-->
+            <!--<displays:DialNeedle x:Name="SpeedGauge"
+                                 Units="km/h"
+                                 Title="Speed"
+                                 MinValue="0" MaxValue="175"
+                                 Value="64"
+                                 HorizontalAlignment="Center"
+                         ></displays:DialNeedle>
+			<displays:DialNeedle x:Name="RPMGauge"
+                                Units="RPM"
+                                Title="RPM"
+                                MinAngle="-225" MaxAngle="45"
+                                MinValue="0" MaxValue="5000" 
+                                Value="1000"
+                                 HorizontalAlignment="Center"
+                                 Grid.Row="0" Grid.Column="1"
+                         ></displays:DialNeedle>
+			<displays:DialNeedle x:Name="CoolantGauge"
+                                 Units="C"
+                                 Title="Temp"
+                                 MinAngle="-225" MaxAngle="45"
+                                 MinValue="-40"  MaxValue="130" 
+                                 Value="60"
+                                 HorizontalAlignment="Center"
+                                 Grid.Row="0" Grid.Column="2"
+                         ></displays:DialNeedle>
+            <displays:DialNeedle x:Name="BatteryGauge"
+                                 Units="%"
+                                 Title="SoC"
+                                 MinAngle="-225" MaxAngle="45"
+                                 MinValue="40" MaxValue="90" 
+                                 Value="75"
+                                 HorizontalAlignment="Center"
+                                 Grid.Row="1" Grid.Column="0"
+                         ></displays:DialNeedle>
+			<displays:DialNeedle x:Name="CurrentGauge"
+                                 Units="A"
+                                 Title="Curr"
+                                 MinAngle="-225" MaxAngle="45"
+                                 MinValue="-100" MaxValue="100"
+                                 Value="0"
+                                   HorizontalAlignment="Center"
+                                 Grid.Row="1" Grid.Column="1"
+                       ></displays:DialNeedle>
+            <displays:DialNeedle x:Name="LoadGauge"
+                                 Units="%"
+                                 Title="Load"
+                                 MinAngle="-225" MaxAngle="45"
+                                 MinValue="0" MaxValue="100" 
+                                 Value="12"
+                                 HorizontalAlignment="Center"
+                                 Grid.Row="1" Grid.Column="2"
+                      ></displays:DialNeedle>
+			<displays:Graph x:Name="SpeedHistogram"
+                            MinValue="0"
+                            Title="Speed"
+                            MaxValue="175"
+                            Grid.Row="2" Grid.ColumnSpan="3" 
+                            Margin="5"/>
+			<displays:Graph x:Name="SoCHistogram"
+                            Title="Battery charge"
+							MinValue="40"
+							MaxValue="90"
+                            Grid.Row="3" Grid.ColumnSpan="3" 
+                            Margin="5"/>
+			<displays:Graph x:Name="CurrentHistogram"
+                            Title="Battery current"
+							MinValue="-100"
+							MaxValue="100"
+                            Grid.Row="4" Grid.ColumnSpan="3" 
+                            Margin="5"/>-->
+
+        </Grid>
+    </RelativePanel>
+</Page>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
